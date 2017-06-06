@@ -9,11 +9,11 @@ const blogSchema = mongoose.Schema({
     firstName: String,
     lastName: String
   },
-  created: {type: Date, default: Date.now}
+  // created: {type: Date, default: Date.now}
 });
 
 blogSchema.virtual('nameString').get(function() {
-  return `$(this.firstName) $(this.lastName)`.trim()
+  return '$(this.firstName) $(this.lastName)'.trim();
 });
 
 blogSchema.methods.apiRepr = function(){
@@ -22,7 +22,7 @@ blogSchema.methods.apiRepr = function(){
     title: this.title,
     content: this.content,
     author: this.nameString,
-    created: this.created
+    // created: this.created
   };
 };
 
