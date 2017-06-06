@@ -1,16 +1,21 @@
 'use strict';
-
+// We need these
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
+//We want mongoose to use the es6 promises
 mongoose.Promise = global.Promise;
 
 const {PORT, DATABASE_URL} = require('./config');
 const {Post} = require('./models');
-
 const app = express();
 app.use(bodyParser.json());
+
+/**
+ * CRUD ENDPOINTS
+ *
+**/
 
 //let users look at the entire database
 app.get('/posts', (req,res) => {
@@ -78,6 +83,7 @@ app.post('/posts', (req,res) => {
 
 });
 
+// let user update a blog post
 app.put('/posts/:id', (req,res) => {
   if(!(req.params.id === req.body.id)) {
     const message = (
@@ -102,6 +108,21 @@ app.put('/posts/:id', (req,res) => {
    .then(post => res.status(204).end())
    .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
+
+// let users delete a blog post by id
+app.delete('/posts/:id', (req,res) => {
+  Post
+  .findByIdAndRemove(req.params.id)
+  .exec()
+  .then(post => res.status(204).end())
+  .catch(err => res.status(500).json({message: 'Internal server error'}));
+});
+
+// catch-all endpoint if client makes request to non-existent endpoint
+app.use('*', function(req, res) {
+  res.status(404).json({message: 'Not Found'});
+});
+
 let server;
 
 function runServer(databaseUrl=DATABASE_URL, port=PORT) {
